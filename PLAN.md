@@ -53,16 +53,17 @@ No multi-seller, no seller onboarding. The admin is the only person listing item
 **Shopping & Checkout**
 - Add to cart
 - Wishlist / saved items
-- Secure checkout with Stripe
-- Shipping cost (flat rate or weight-based)
+- Secure checkout with Stripe (3D Secure / SCA enforced)
+- Shipping cost (global setting configured by admin, extensible for future postal API integration)
 - Order confirmation email
-- Guest checkout option
+- Guest checkout allowed
+- Fraud protection: Stripe Radar, 3D Secure to shift chargeback liability, delivery confirmation tracking
 
 **Customer Accounts**
 - Email/password registration and login
 - Order history and tracking
 - Wishlist management
-- Contact/inquiry form
+- Built-in messaging (contact admin about items or orders)
 
 #### Admin Panel
 
@@ -71,6 +72,7 @@ No multi-seller, no seller onboarding. The admin is the only person listing item
 - Image upload with drag-and-drop reordering
 - Set item status: Draft, Active, Sold, Archived
 - Mark items as featured
+- Toggle "Price on Request" per listing (not default — most items show price)
 - Bulk actions (archive, delete)
 
 **Category Management**
@@ -82,11 +84,17 @@ No multi-seller, no seller onboarding. The admin is the only person listing item
 - Update order status (Processing, Shipped, Delivered)
 - Add tracking numbers
 - Order history and search
+- Flag suspicious orders (Stripe Radar risk score)
+
+**Messaging**
+- View and reply to customer messages from admin panel
+- Per-item inquiries and general contact
+- Email notifications when new message received
 
 **Site Settings**
 - Shop name, description, logo
 - About page content
-- Shipping rates configuration
+- Global shipping rate (single configurable rate; architecture supports future postal API integration)
 - Contact info / social links
 
 **Analytics (basic)**
@@ -98,7 +106,6 @@ No multi-seller, no seller onboarding. The admin is the only person listing item
 ### Phase 2 — Growth Features
 
 - **Make an Offer**: Customers propose a price, admin accepts/counters/declines
-- **Contact about item**: Inquiry form on each listing
 - **Collections**: Curated thematic groupings (e.g., "Art Deco Lighting")
 - **Blog/Stories**: Write about items, collecting tips, provenance deep-dives
 - **Newsletter**: Email signup + integration (e.g., Resend or Mailchimp)
@@ -111,6 +118,7 @@ No multi-seller, no seller onboarding. The admin is the only person listing item
 
 - **AI-powered identification**: Upload a photo, get era/style suggestions (admin tool)
 - **SEO structured data**: JSON-LD product markup for Google Shopping
+- **Postal service API integration**: Real-time shipping rate calculation (USPS, UPS, FedEx, etc.)
 - **Mobile app** (React Native) or PWA
 - **International shipping** integration
 - **Multi-currency** display
@@ -136,7 +144,7 @@ No multi-seller, no seller onboarding. The admin is the only person listing item
 - **Vercel** — Hosting and deployment
 - **Supabase** or **Neon** — Managed PostgreSQL
 - **Uploadthing** or **Cloudinary** — Image upload and optimization
-- **Stripe** — Payment processing (standard Stripe, no Connect needed)
+- **Stripe** — Payment processing with 3D Secure (SCA) + Stripe Radar for fraud prevention
 - **Resend** — Transactional emails
 - **NextAuth.js (Auth.js)** — Authentication (admin login + customer accounts)
 
@@ -162,7 +170,8 @@ Customer
 └── orders[], wishlistItems[]
 
 Listing
-├── id, title, description, price
+├── id, title, description, price?
+├── priceOnRequest (boolean, default false)
 ├── categoryId
 ├── era, materials[], dimensions, weight
 ├── condition (MINT, EXCELLENT, GOOD, FAIR, POOR)
@@ -204,12 +213,30 @@ WishlistItem
 ├── id, customerId, listingId
 └── createdAt
 
+Message
+├── id, threadId
+├── customerId?, customerEmail, customerName
+├── listingId? (if inquiry about specific item)
+├── senderRole (CUSTOMER, ADMIN)
+├── body (text)
+├── read (boolean)
+└── createdAt
+
+MessageThread
+├── id, customerId?, customerEmail
+├── listingId? (optional link to item)
+├── subject
+├── status (OPEN, CLOSED)
+├── lastMessageAt
+└── createdAt
+
 SiteSettings (singleton)
 ├── shopName, shopDescription, logo
 ├── aboutContent
 ├── contactEmail, phone
 ├── socialLinks (JSON)
-├── shippingRates (JSON)
+├── shippingRate (global flat rate, extensible to shipping provider API later)
+├── shippingProvider (enum: FLAT_RATE | future: USPS, UPS, FEDEX, etc.)
 └── updatedAt
 ```
 
@@ -225,7 +252,7 @@ PUBLIC (Storefront)
 /item/[slug]               — Single item detail page
 /search?q=...              — Search results
 /about                     — About the shop / owner
-/contact                   — Contact form
+/contact                   — Contact / send message
 /cart                      — Shopping cart
 /checkout                  — Checkout flow
 
@@ -234,6 +261,8 @@ CUSTOMER ACCOUNT
 /account/orders            — Order history
 /account/orders/[id]       — Order detail / tracking
 /account/wishlist          — Saved items
+/account/messages          — Message threads with admin
+/account/messages/[id]     — Single conversation
 
 AUTH
 /login                     — Customer login
@@ -247,6 +276,8 @@ ADMIN (protected)
 /admin/orders              — Order management
 /admin/orders/[id]         — Order detail
 /admin/categories          — Category management
+/admin/messages            — All message threads
+/admin/messages/[id]       — Reply to customer
 /admin/settings            — Site settings (shop info, shipping, etc.)
 ```
 
@@ -367,10 +398,25 @@ dibbi/
 
 ---
 
-## 10. Open Questions
+## 10. Fraud & Chargeback Protection
 
-1. **Shipping**: Flat rate, weight-based, or per-item defined by admin?
-2. **Guest checkout**: Allow purchases without creating an account?
-3. **"Price on Request"**: Support this for high-value items?
-4. **Contact form**: Simple email form, or integrated messaging?
-5. **Payment**: Stripe only, or also PayPal?
+Antiques are high-value, one-of-a-kind items — chargeback fraud is a real risk. Strategy:
+
+- **3D Secure (SCA) on all transactions**: Shifts chargeback liability to the card issuer. If a cardholder's bank approved the 3DS challenge, you win the dispute automatically.
+- **Stripe Radar**: Automated fraud scoring. Flag or block high-risk orders before fulfillment.
+- **Delivery confirmation**: Always ship with tracking. For high-value items, require signature on delivery.
+- **Order evidence collection**: Stripe automatically stores payment evidence, but also keep shipping confirmation, tracking proof, and delivery confirmation in the Order record.
+- **Hold before shipping**: Admin reviews orders before fulfilling — don't auto-ship. Check Stripe's risk assessment first.
+- **No instant digital delivery**: Since all items are physical and shipped, there's a natural window to review and cancel suspicious orders.
+
+---
+
+## 11. Decisions Made
+
+| Question | Decision |
+|----------|----------|
+| Shipping | Global flat rate setting (admin-configurable). Architecture supports swapping in postal service APIs (USPS, UPS, FedEx) in Phase 3. |
+| Guest checkout | Yes, allowed. Fraud mitigated via 3D Secure + Stripe Radar, not account walls. |
+| Price on Request | Available as a per-listing toggle (not default). Items with POR show "Inquire" button instead of "Add to Cart". |
+| Contact / messaging | Built-in messaging system. Customers and admin communicate within the app. Email notifications on new messages. |
+| Payment method | Stripe only (with 3D Secure enforced). 3DS shifts chargeback liability to card issuer, which is the strongest fraud protection available. PayPal can be considered later but Stripe + 3DS is the priority. |
