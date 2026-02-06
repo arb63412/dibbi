@@ -1,5 +1,7 @@
 # Dibbi — Antique Shop E-Commerce Platform
 
+**Location**: Australia | **Currency**: AUD | **Primary market**: Australian buyers (international shipping in Phase 3)
+
 ## Vision
 
 Dibbi is a single-owner online antique shop for selling antiques, vintage items, and collectibles. One admin manages all inventory, orders, and content. The storefront emphasizes provenance, authenticity, and storytelling — because every antique has a story.
@@ -54,7 +56,9 @@ No multi-seller, no seller onboarding. The admin is the only person listing item
 - Add to cart
 - Wishlist / saved items
 - Secure checkout with Stripe (3D Secure / SCA enforced)
-- Shipping cost (global setting configured by admin, extensible for future postal API integration)
+- Shipping cost (global flat rate in AUD, extensible for future Australia Post API integration)
+- Prices displayed in AUD
+- GST included in displayed prices (Australian Consumer Law compliant)
 - Order confirmation email
 - Guest checkout allowed
 - Fraud protection: Stripe Radar, 3D Secure to shift chargeback liability, delivery confirmation tracking
@@ -94,7 +98,7 @@ No multi-seller, no seller onboarding. The admin is the only person listing item
 **Site Settings**
 - Shop name, description, logo
 - About page content
-- Global shipping rate (single configurable rate; architecture supports future postal API integration)
+- Global shipping rate in AUD (single configurable rate; architecture supports future Australia Post API integration)
 - Contact info / social links
 
 **Analytics (basic)**
@@ -118,7 +122,7 @@ No multi-seller, no seller onboarding. The admin is the only person listing item
 
 - **AI-powered identification**: Upload a photo, get era/style suggestions (admin tool)
 - **SEO structured data**: JSON-LD product markup for Google Shopping
-- **Postal service API integration**: Real-time shipping rate calculation (USPS, UPS, FedEx, etc.)
+- **Australia Post API integration**: Real-time shipping rate calculation (domestic); Sendle, Aramex as alternatives
 - **Mobile app** (React Native) or PWA
 - **International shipping** integration
 - **Multi-currency** display
@@ -170,7 +174,7 @@ Customer
 └── orders[], wishlistItems[]
 
 Listing
-├── id, title, description, price?
+├── id, title, description, price? (AUD, GST-inclusive)
 ├── priceOnRequest (boolean, default false)
 ├── categoryId
 ├── era, materials[], dimensions, weight
@@ -197,7 +201,7 @@ Order
 ├── customerEmail, customerName
 ├── items[] (OrderItem)
 ├── status (PENDING, PAID, PROCESSING, SHIPPED, DELIVERED, CANCELLED)
-├── totalAmount, shippingCost
+├── subtotal, gstAmount, shippingCost, totalAmount (all AUD)
 ├── shippingAddress (JSON)
 ├── trackingNumber?, trackingUrl?
 ├── stripePaymentIntentId
@@ -235,8 +239,10 @@ SiteSettings (singleton)
 ├── aboutContent
 ├── contactEmail, phone
 ├── socialLinks (JSON)
-├── shippingRate (global flat rate, extensible to shipping provider API later)
-├── shippingProvider (enum: FLAT_RATE | future: USPS, UPS, FEDEX, etc.)
+├── shippingRate (global flat rate in AUD, extensible to shipping provider API later)
+├── shippingProvider (enum: FLAT_RATE | future: AUSTRALIA_POST, SENDLE, ARAMEX)
+├── gstRate (default 10%)
+├── abnNumber (Australian Business Number)
 └── updatedAt
 ```
 
@@ -404,7 +410,7 @@ Antiques are high-value, one-of-a-kind items — chargeback fraud is a real risk
 
 - **3D Secure (SCA) on all transactions**: Shifts chargeback liability to the card issuer. If a cardholder's bank approved the 3DS challenge, you win the dispute automatically.
 - **Stripe Radar**: Automated fraud scoring. Flag or block high-risk orders before fulfillment.
-- **Delivery confirmation**: Always ship with tracking. For high-value items, require signature on delivery.
+- **Delivery confirmation**: Always ship with tracking (Australia Post tracking, Sendle, etc.). For high-value items, require signature on delivery.
 - **Order evidence collection**: Stripe automatically stores payment evidence, but also keep shipping confirmation, tracking proof, and delivery confirmation in the Order record.
 - **Hold before shipping**: Admin reviews orders before fulfilling — don't auto-ship. Check Stripe's risk assessment first.
 - **No instant digital delivery**: Since all items are physical and shipped, there's a natural window to review and cancel suspicious orders.
@@ -415,7 +421,9 @@ Antiques are high-value, one-of-a-kind items — chargeback fraud is a real risk
 
 | Question | Decision |
 |----------|----------|
-| Shipping | Global flat rate setting (admin-configurable). Architecture supports swapping in postal service APIs (USPS, UPS, FedEx) in Phase 3. |
+| Shipping | Global flat rate in AUD (admin-configurable). Architecture supports swapping in Australia Post / Sendle / Aramex APIs in Phase 3. |
+| Location | Australia-based. Prices in AUD, GST-inclusive. Domestic shipping initially, international in Phase 3. |
+| Tax | GST (10%) included in all displayed prices. ABN shown on invoices/receipts. Order records break out subtotal + GST for BAS reporting. |
 | Guest checkout | Yes, allowed. Fraud mitigated via 3D Secure + Stripe Radar, not account walls. |
 | Price on Request | Available as a per-listing toggle (not default). Items with POR show "Inquire" button instead of "Add to Cart". |
 | Contact / messaging | Built-in messaging system. Customers and admin communicate within the app. Email notifications on new messages. |
