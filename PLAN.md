@@ -1,8 +1,8 @@
-# Dibbi — Antique Selling E-Commerce Platform
+# Dibbi — Antique Shop E-Commerce Platform
 
 ## Vision
 
-Dibbi is a curated online marketplace for buying and selling antiques, vintage items, and collectibles. It emphasizes provenance, authenticity, and storytelling — because every antique has a story.
+Dibbi is a single-owner online antique shop for selling antiques, vintage items, and collectibles. One admin manages all inventory, orders, and content. The storefront emphasizes provenance, authenticity, and storytelling — because every antique has a story.
 
 ---
 
@@ -11,7 +11,6 @@ Dibbi is a curated online marketplace for buying and selling antiques, vintage i
 ### What Makes Antique E-Commerce Different
 - **Provenance matters**: Buyers want to know the history and origin of items
 - **Condition grading**: Standardized condition ratings (Mint, Excellent, Good, Fair, Poor)
-- **Authenticity**: Verification and trust signals are critical
 - **One-of-a-kind inventory**: Most items are unique, not mass-produced
 - **Visual-first**: High-quality photography from multiple angles is essential
 - **Era/Period categorization**: Victorian, Art Deco, Mid-Century Modern, etc.
@@ -22,79 +21,100 @@ Dibbi is a curated online marketplace for buying and selling antiques, vintage i
 
 | Role | Description |
 |------|-------------|
-| **Buyer** | Browse, search, purchase antiques |
-| **Seller** | List items, manage inventory, fulfill orders |
-| **Admin** | Moderate listings, manage users, platform settings |
+| **Customer** | Browse, search, purchase antiques |
+| **Admin** | Single shop owner — manages inventory, orders, content, and site settings |
 
-Sellers can also be buyers. Single account with role-based permissions.
+No multi-seller, no seller onboarding. The admin is the only person listing items.
 
 ---
 
 ## 3. Feature Breakdown
 
-### Phase 1 — MVP (Core Marketplace)
+### Phase 1 — MVP (Core Shop)
 
-#### Authentication & Accounts
-- Email/password registration and login
-- OAuth (Google, Apple)
-- User profiles with avatar, bio, location
-- Seller verification flow
+#### Customer-Facing
 
-#### Product Listings
-- Title, description, price
-- Category & subcategory (Furniture, Jewelry, Art, Pottery, Books, Clocks, etc.)
-- Era/Period tags (Victorian, Art Deco, Mid-Century Modern, Antebellum, etc.)
-- Condition grade (Mint / Excellent / Good / Fair / Poor)
-- Provenance/history text field
-- Dimensions & weight
-- Multiple high-res photos (up to 10)
-- Materials (wood, brass, porcelain, silver, etc.)
-
-#### Search & Discovery
+**Browsing & Discovery**
+- Homepage with featured items, categories, new arrivals
+- Browse by category (Furniture, Jewelry, Art, Pottery, Books, Clocks, etc.)
+- Browse by era/period (Victorian, Art Deco, Mid-Century Modern, etc.)
 - Full-text search with filters (category, era, price range, condition, material)
-- Browse by category
-- Browse by era/period
 - Sort by: newest, price low-high, price high-low
-- Featured/curated collections on homepage
 
-#### Shopping & Checkout
+**Product Pages**
+- Title, description, price
+- Condition grade (Mint / Excellent / Good / Fair / Poor)
+- Provenance/history
+- Era/Period
+- Materials, dimensions, weight
+- Multiple high-res photos (up to 10) with zoom/gallery
+- Related items
+
+**Shopping & Checkout**
 - Add to cart
-- Saved/wishlist items
+- Wishlist / saved items
 - Secure checkout with Stripe
-- Shipping cost calculation
-- Order confirmation emails
+- Shipping cost (flat rate or weight-based)
+- Order confirmation email
+- Guest checkout option
 
-#### Seller Dashboard
-- List new items
-- Manage active listings
-- Order management (mark shipped, add tracking)
-- Sales analytics (basic)
+**Customer Accounts**
+- Email/password registration and login
+- Order history and tracking
+- Wishlist management
+- Contact/inquiry form
 
-#### Buyer Experience
-- Order history
-- Order tracking
-- Leave reviews/ratings for sellers
+#### Admin Panel
+
+**Inventory Management**
+- Add / edit / delete listings
+- Image upload with drag-and-drop reordering
+- Set item status: Draft, Active, Sold, Archived
+- Mark items as featured
+- Bulk actions (archive, delete)
+
+**Category Management**
+- Create / edit / delete categories and subcategories
+- Category images and descriptions
+
+**Order Management**
+- View incoming orders
+- Update order status (Processing, Shipped, Delivered)
+- Add tracking numbers
+- Order history and search
+
+**Site Settings**
+- Shop name, description, logo
+- About page content
+- Shipping rates configuration
+- Contact info / social links
+
+**Analytics (basic)**
+- Total sales, revenue
+- Orders over time
+- Popular items / categories
+- Inventory count
 
 ### Phase 2 — Growth Features
 
-- **Make an Offer**: Buyers propose a price, seller accepts/counters/declines
-- **Auction mode**: Timed auctions for rare items
-- **Favorites & follows**: Follow sellers, get notifications on new listings
-- **Messaging**: Buyer-seller direct messaging
-- **Advanced search**: Search by decade, origin country, style
-- **Collections**: Curated thematic collections (e.g., "Art Deco Lighting")
-- **Seller tiers**: Basic, Verified, Premium seller badges
-- **Blog/Editorial**: Stories about antiques, collecting guides
+- **Make an Offer**: Customers propose a price, admin accepts/counters/declines
+- **Contact about item**: Inquiry form on each listing
+- **Collections**: Curated thematic groupings (e.g., "Art Deco Lighting")
+- **Blog/Stories**: Write about items, collecting tips, provenance deep-dives
+- **Newsletter**: Email signup + integration (e.g., Resend or Mailchimp)
+- **Social sharing**: Share listings to social media
+- **Recently viewed**: Track and show recently viewed items
+- **Advanced filters**: Search by decade, origin country, style, price range sliders
+- **Discount codes**: Promotional pricing
 
-### Phase 3 — Scale & Differentiation
+### Phase 3 — Scale & Polish
 
-- **AI-powered identification**: Upload a photo, get era/style/value estimates
-- **Authenticity certificates**: Digital certificates of authenticity
-- **Appraisal requests**: Connect with professional appraisers
-- **Mobile app** (React Native)
+- **AI-powered identification**: Upload a photo, get era/style suggestions (admin tool)
+- **SEO structured data**: JSON-LD product markup for Google Shopping
+- **Mobile app** (React Native) or PWA
 - **International shipping** integration
-- **Multi-currency** support
-- **Affiliate program** for antique bloggers/influencers
+- **Multi-currency** display
+- **Inventory import/export**: CSV bulk upload for listings
 
 ---
 
@@ -105,88 +125,92 @@ Sellers can also be buyers. Single account with role-based permissions.
 - **TypeScript** — Type safety throughout
 - **Tailwind CSS** — Utility-first styling
 - **shadcn/ui** — Component library built on Radix UI
-- **Zustand** — Lightweight state management
 - **React Hook Form + Zod** — Form handling and validation
 
 ### Backend
 - **Next.js API Routes / Server Actions** — API layer
 - **Prisma** — ORM for database access
 - **PostgreSQL** — Primary database
-- **Redis** — Caching, session storage, rate limiting
 
 ### Infrastructure & Services
 - **Vercel** — Hosting and deployment
 - **Supabase** or **Neon** — Managed PostgreSQL
 - **Uploadthing** or **Cloudinary** — Image upload and optimization
-- **Stripe** — Payments and payouts to sellers
+- **Stripe** — Payment processing (standard Stripe, no Connect needed)
 - **Resend** — Transactional emails
-- **Algolia** or **Meilisearch** — Full-text search (Phase 2)
-- **NextAuth.js (Auth.js)** — Authentication
+- **NextAuth.js (Auth.js)** — Authentication (admin login + customer accounts)
 
 ### Testing & Quality
 - **Vitest** — Unit testing
 - **Playwright** — E2E testing
 - **ESLint + Prettier** — Code quality
-- **Husky** — Git hooks
 
 ---
 
 ## 5. Data Model (Core Entities)
 
 ```
-User
-├── id, email, name, avatar, bio, location
-├── role (BUYER, SELLER, ADMIN)
-├── emailVerified, createdAt, updatedAt
-├── sellerProfile? (one-to-one)
-└── reviews[], orders[], listings[]
+Admin
+├── id, email, passwordHash
+├── name
+└── createdAt
 
-SellerProfile
-├── id, userId, shopName, shopDescription
-├── verified, verifiedAt
-├── stripeAccountId
-└── ratings, totalSales
+Customer
+├── id, email, name, passwordHash?
+├── phone?, address?
+├── createdAt, updatedAt
+└── orders[], wishlistItems[]
 
 Listing
-├── id, sellerId, title, description, price
-├── category, subcategory
-├── era, materials[], dimensions
+├── id, title, description, price
+├── categoryId
+├── era, materials[], dimensions, weight
 ├── condition (MINT, EXCELLENT, GOOD, FAIR, POOR)
 ├── provenance (text)
-├── images[] (urls)
 ├── status (DRAFT, ACTIVE, SOLD, ARCHIVED)
 ├── featured (boolean)
-└── createdAt, updatedAt
+├── slug (URL-friendly)
+├── createdAt, updatedAt
+└── images[]
 
 Category
 ├── id, name, slug, description
 ├── parentId? (for subcategories)
 └── image
 
+Image
+├── id, listingId, url, alt
+├── position (display order)
+└── width, height
+
 Order
-├── id, buyerId, sellerId
+├── id, customerId?
+├── customerEmail, customerName
 ├── items[] (OrderItem)
-├── status (PENDING, PAID, SHIPPED, DELIVERED, CANCELLED)
+├── status (PENDING, PAID, PROCESSING, SHIPPED, DELIVERED, CANCELLED)
 ├── totalAmount, shippingCost
-├── shippingAddress
-├── trackingNumber, trackingUrl
-├── stripePaymentId
+├── shippingAddress (JSON)
+├── trackingNumber?, trackingUrl?
+├── stripePaymentIntentId
+├── notes (admin notes)
 └── createdAt, updatedAt
 
 OrderItem
 ├── id, orderId, listingId
-├── price (snapshot at time of purchase)
-└── listing (reference)
+├── title (snapshot), price (snapshot)
+└── quantity (typically 1 for antiques)
 
-Review
-├── id, orderId, buyerId, sellerId
-├── rating (1-5), comment
+WishlistItem
+├── id, customerId, listingId
 └── createdAt
 
-Image
-├── id, listingId, url, alt
-├── position (ordering)
-└── width, height
+SiteSettings (singleton)
+├── shopName, shopDescription, logo
+├── aboutContent
+├── contactEmail, phone
+├── socialLinks (JSON)
+├── shippingRates (JSON)
+└── updatedAt
 ```
 
 ---
@@ -194,31 +218,36 @@ Image
 ## 6. Key Pages / Routes
 
 ```
-/                          — Homepage (featured, categories, new arrivals)
-/browse                    — Browse all listings with filters
-/browse/[category]         — Browse by category
-/item/[id]                 — Single listing detail page
+PUBLIC (Storefront)
+/                          — Homepage (hero, featured, categories, new arrivals)
+/shop                      — Browse all items with filters
+/shop/[category]           — Browse by category
+/item/[slug]               — Single item detail page
 /search?q=...              — Search results
+/about                     — About the shop / owner
+/contact                   — Contact form
+/cart                      — Shopping cart
+/checkout                  — Checkout flow
 
-/auth/login                — Login page
-/auth/register             — Registration page
-
-/account                   — Account settings
+CUSTOMER ACCOUNT
+/account                   — Account overview
 /account/orders            — Order history
+/account/orders/[id]       — Order detail / tracking
 /account/wishlist          — Saved items
 
-/sell                      — Seller onboarding / CTA
-/dashboard                 — Seller dashboard
-/dashboard/listings        — Manage listings
-/dashboard/listings/new    — Create new listing
-/dashboard/listings/[id]   — Edit listing
-/dashboard/orders          — Seller order management
-/dashboard/analytics       — Sales analytics
+AUTH
+/login                     — Customer login
+/register                  — Customer registration
 
-/admin                     — Admin panel
-/admin/users               — User management
-/admin/listings            — Listing moderation
+ADMIN (protected)
+/admin                     — Dashboard overview (stats, recent orders)
+/admin/listings            — All listings table
+/admin/listings/new        — Create new listing
+/admin/listings/[id]/edit  — Edit listing
+/admin/orders              — Order management
+/admin/orders/[id]         — Order detail
 /admin/categories          — Category management
+/admin/settings            — Site settings (shop info, shipping, etc.)
 ```
 
 ---
@@ -227,20 +256,20 @@ Image
 
 - **Warm, earthy color palette**: Cream, warm brown, muted gold, forest green accents
 - **Typography**: Serif headings (classic, trustworthy feel), sans-serif body text
-- **Photography-forward**: Large hero images, gallery views
+- **Photography-forward**: Large hero images, gallery views with zoom
 - **Minimal, clean layout**: Let the items speak for themselves
-- **Trust indicators**: Verified seller badges, condition grades, provenance highlights
-- **Responsive**: Mobile-first design, works beautifully on all screen sizes
+- **Trust indicators**: Condition grades, provenance highlights, secure checkout badges
+- **Responsive**: Mobile-first design
 
-### Color Palette (suggestion)
+### Color Palette
 | Token | Hex | Usage |
 |-------|-----|-------|
 | cream | `#FAF7F2` | Background |
 | warm-brown | `#8B7355` | Primary/accents |
 | dark-brown | `#3E2F1C` | Text |
 | gold | `#C4A35A` | Highlights, CTAs |
-| forest | `#4A6741` | Success, verified badges |
-| muted-red | `#A85C4A` | Alerts, sale indicators |
+| forest | `#4A6741` | Success states |
+| muted-red | `#A85C4A` | Alerts, sold indicators |
 
 ---
 
@@ -249,38 +278,49 @@ Image
 ```
 dibbi/
 ├── src/
-│   ├── app/                    # Next.js App Router pages
-│   │   ├── (auth)/             # Auth route group
-│   │   ├── (main)/             # Public-facing pages
-│   │   ├── dashboard/          # Seller dashboard
-│   │   ├── admin/              # Admin panel
-│   │   ├── api/                # API routes
+│   ├── app/
+│   │   ├── (storefront)/          # Public shop pages
+│   │   │   ├── page.tsx           # Homepage
+│   │   │   ├── shop/              # Browse & category pages
+│   │   │   ├── item/[slug]/       # Item detail
+│   │   │   ├── search/            # Search results
+│   │   │   ├── cart/              # Cart page
+│   │   │   ├── checkout/          # Checkout flow
+│   │   │   ├── about/             # About page
+│   │   │   └── contact/           # Contact page
+│   │   ├── (account)/             # Customer account pages
+│   │   │   ├── account/
+│   │   │   ├── login/
+│   │   │   └── register/
+│   │   ├── admin/                 # Admin panel (protected)
+│   │   │   ├── page.tsx           # Dashboard
+│   │   │   ├── listings/
+│   │   │   ├── orders/
+│   │   │   ├── categories/
+│   │   │   └── settings/
+│   │   ├── api/                   # API routes
 │   │   ├── layout.tsx
-│   │   └── page.tsx
+│   │   └── globals.css
 │   ├── components/
-│   │   ├── ui/                 # shadcn/ui components
-│   │   ├── layout/             # Header, Footer, Sidebar
-│   │   ├── listings/           # Listing card, gallery, filters
-│   │   ├── checkout/           # Cart, checkout flow
-│   │   └── dashboard/          # Seller dashboard components
+│   │   ├── ui/                    # shadcn/ui components
+│   │   ├── storefront/            # Shop components (header, footer, item card, filters)
+│   │   ├── admin/                 # Admin components (tables, forms, charts)
+│   │   └── shared/                # Shared components (image gallery, condition badge)
 │   ├── lib/
-│   │   ├── db.ts               # Prisma client
-│   │   ├── auth.ts             # Auth configuration
-│   │   ├── stripe.ts           # Stripe setup
-│   │   ├── utils.ts            # Utility functions
-│   │   └── validators/         # Zod schemas
-│   ├── hooks/                  # Custom React hooks
-│   ├── stores/                 # Zustand stores
-│   └── types/                  # TypeScript types
+│   │   ├── db.ts                  # Prisma client
+│   │   ├── auth.ts                # Auth configuration
+│   │   ├── stripe.ts              # Stripe setup
+│   │   ├── utils.ts               # Utility functions
+│   │   └── validators.ts          # Zod schemas
+│   ├── hooks/                     # Custom React hooks
+│   └── types/                     # TypeScript types
 ├── prisma/
-│   ├── schema.prisma           # Database schema
-│   ├── seed.ts                 # Seed data
+│   ├── schema.prisma
+│   ├── seed.ts
 │   └── migrations/
 ├── public/
 │   └── images/
 ├── tests/
-│   ├── unit/
-│   └── e2e/
 ├── .env.example
 ├── next.config.ts
 ├── tailwind.config.ts
@@ -296,57 +336,41 @@ dibbi/
 ### Sprint 1 — Foundation (Week 1-2)
 - [ ] Project setup (Next.js, TypeScript, Tailwind, shadcn/ui)
 - [ ] Database schema (Prisma + PostgreSQL)
-- [ ] Authentication (NextAuth.js)
-- [ ] Basic layout (header, footer, navigation)
-- [ ] Homepage skeleton
+- [ ] Auth setup (admin login + customer accounts)
+- [ ] Basic storefront layout (header, footer, navigation)
+- [ ] Homepage with placeholder content
 
-### Sprint 2 — Listings (Week 3-4)
-- [ ] Create listing form (seller)
-- [ ] Image upload
-- [ ] Listing detail page
-- [ ] Browse/category pages
-- [ ] Search with filters
+### Sprint 2 — Inventory & Browsing (Week 3-4)
+- [ ] Admin: create/edit listing form with image upload
+- [ ] Admin: listings table with status management
+- [ ] Admin: category management
+- [ ] Storefront: item detail page
+- [ ] Storefront: browse/category pages with filters
+- [ ] Storefront: search
 
 ### Sprint 3 — Commerce (Week 5-6)
-- [ ] Shopping cart
+- [ ] Shopping cart (stored in localStorage + DB for logged-in users)
 - [ ] Stripe checkout integration
-- [ ] Order creation and confirmation
-- [ ] Seller order management
-- [ ] Email notifications (order confirmation, shipping updates)
+- [ ] Order creation and confirmation emails
+- [ ] Admin: order management (view, update status, add tracking)
+- [ ] Customer: order history and tracking
 
-### Sprint 4 — Seller Experience (Week 7-8)
-- [ ] Seller dashboard
-- [ ] Listing management (edit, archive, relist)
-- [ ] Sales analytics
-- [ ] Seller profiles and public shop pages
-- [ ] Reviews and ratings
-
-### Sprint 5 — Polish & Launch (Week 9-10)
-- [ ] SEO optimization (metadata, structured data, sitemaps)
-- [ ] Performance optimization (image optimization, caching)
-- [ ] Mobile responsiveness audit
-- [ ] Error handling and edge cases
-- [ ] Testing (unit + E2E)
-- [ ] Launch checklist
+### Sprint 4 — Polish & Launch (Week 7-8)
+- [ ] About page, contact form
+- [ ] Wishlist functionality
+- [ ] Admin dashboard with basic analytics
+- [ ] SEO (metadata, Open Graph, sitemaps)
+- [ ] Performance (image optimization, caching)
+- [ ] Mobile responsiveness
+- [ ] Testing
+- [ ] Launch
 
 ---
 
-## 10. Revenue Model
+## 10. Open Questions
 
-- **Commission**: X% per sale (e.g., 8-12%)
-- **Listing fees**: Optional premium placement / featured listings
-- **Seller subscriptions**: Free tier + paid tiers with lower commission rates
-- **Promoted listings**: Sellers pay to boost visibility
-
----
-
-## 11. Open Questions / Decisions Needed
-
-1. **Marketplace vs. single-seller?** — Plan assumes multi-seller marketplace
-2. **Shipping**: Flat rate, calculated, or seller-defined?
-3. **International scope**: US-only initially, or global from day one?
-4. **Content moderation**: Manual review of listings, or trust-based with reporting?
-5. **Escrow/disputes**: How to handle buyer protection and disputes?
-6. **Seller payouts**: Immediate via Stripe Connect, or batched?
-7. **Categories**: Start with a fixed set, or let sellers create custom categories?
-8. **Pricing**: Support "Price on Request" for high-value items?
+1. **Shipping**: Flat rate, weight-based, or per-item defined by admin?
+2. **Guest checkout**: Allow purchases without creating an account?
+3. **"Price on Request"**: Support this for high-value items?
+4. **Contact form**: Simple email form, or integrated messaging?
+5. **Payment**: Stripe only, or also PayPal?
